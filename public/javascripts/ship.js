@@ -32,6 +32,8 @@ var Ship = function(rect) {
    // Special Properties
    this.jump_charge = 0;
    this.charge_rate = 150;
+   this.health_max = 100;
+   this.health = this.health_max;
    this.heat = 0;
    this.heat_max = 300;
    this.cool_rate = 10; // How fast heat//overheat dissipates
@@ -44,13 +46,13 @@ var Ship = function(rect) {
    this.o_timer = 0;
 
    // Weapons - Each array index holds data for one weapon
-   this.ammo = [0,0,0];
-   this.reload_time = [3,5,1];
-   this.reload_timer = [0,0,0];
+   this.ammo = [0,0];
+   this.reload_time = [3,5];
+   this.reload_timer = [0,0];
    // Delay between shots in milliseconds;
-   this.delay = [300,1000,200];
-   this.delay_timer = [0,0,0];
-   this.weapon_firing = [false, false, false];
+   this.delay = [300,1000];
+   this.delay_timer = [0,0];
+   this.weapon_firing = [false, false];
 
    // Display Properties
    this.originalImage = gamejs.image.load("images/ship.png");
@@ -71,6 +73,9 @@ Ship.prototype.update = function(msDuration) {
    this.check_heat(_s);
    this.check_weapons(msDuration);
    this.check_planet_collisions();
+   if (this.health <= 0) {
+      this.kill();
+   }
    // Jump charge
    if (this.charging) {
       if (this.o_timer > 0) {
@@ -89,8 +94,8 @@ Ship.prototype.update = function(msDuration) {
    }
    globals.offset = [(this._x - globals.width/2), (this._y - globals.height/2)];
    var position = globals.get_position([this._x, this._y], this.center, this.getSize(), -this.rotation);
-   this.rect.left = position[0];
-   this.rect.top = position[1];
+   this.rect = new gamejs.Rect(position, this.image.getSize());
+   this.radius = Math.min((this.originalImage.getSize()[0] * this.center[0]), (this.originalImage.getSize()[1] * this.center[1]));
 };
 Ship.prototype.jump = function() {
    if (this.jump_charge > min_jump_charge) {
@@ -187,9 +192,9 @@ Ship.prototype.check_in_bounds = function() {
 
 Ship.prototype.check_planet_collisions = function() {
    var that = this;
-   var c_planets = gamejs.sprite.spriteCollide(this, globals.planets, false);
+   var c_planets = gamejs.sprite.spriteCollide(this, globals.planets, true, gamejs.sprite.collideCircle);
    c_planets.forEach(function(planet) {
-      that.heat++;
+      that.health -= 10;
    });
 }
 Ship.prototype.fire = function() {

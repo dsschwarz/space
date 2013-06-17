@@ -15,10 +15,17 @@ Bomb.prototype.update = function(msDuration) {
 	var _s = msDuration/1000;
 	this._x += this.xspeed * _s;
 	this._y += this.yspeed * _s;
-	var collision_planets = gamejs.sprite.spriteCollide(this, globals.planets, true);
-	var collision_ships = gamejs.sprite.spriteCollide(this, globals.ships, true, gamejs.sprite.CollideCircle);
-	if (collision_planets.length > 0) {
+	var collision_planets = gamejs.sprite.spriteCollide(this, globals.planets, false);
+	var collision_ships = gamejs.sprite.spriteCollide(this, globals.ships, false, gamejs.sprite.CollideCircle);
+	if (collision_planets.length > 0)  {
 		this.explode();
+		var that = this;
+		collision_planets.forEach(function(planet) {
+			planet.health -= that.damage;
+			if (planet.health <= 0) {
+				planet.kill();
+			}
+		});
 	}
 	var pos = globals.get_position([this._x, this._y], [.5, .5], this.image.getSize(), 0);
 	this.rect.left = pos[0];

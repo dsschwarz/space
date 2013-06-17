@@ -18,8 +18,12 @@ var Projectile = function(rect) {
    this.yspeed = 0;
 
    this.originalImage = gamejs.image.load("images/wiki.png");
-   this.image = gamejs.transform.scale(this.originalImage, [20, 20]); 
+   this.image = gamejs.transform.scale(this.originalImage, [20, 20]);
    this.rect = new gamejs.Rect([this._x, this._y]);
+   this.draw = function(surface) {
+      surface.blit(this.image, this.rect);
+      return;
+   }
    return this;
 }
 gamejs.utils.objects.extend(Projectile, base.BaseSprite);
@@ -29,6 +33,8 @@ Projectile.prototype.update = function(msDuration) {
 	var pos = globals.get_position([this._x, this._y], [.5, .5], this.getSize(), 0);
 	this.rect.left = pos[0];
 	this.rect.top = pos[1];
+   this.radius = Math.min((this.originalImage.width * this.center[0]), (this.originalImage.height * this.center[1]));
+
 }
 
 exports.Projectile = Projectile;

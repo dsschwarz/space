@@ -22,7 +22,7 @@ function main() {
    gamejs.display.setCaption("Example Sprites");
    // create ship
    var ship = new $ship.Ship([100, 100]);
-
+   globals.ships.add(ship);
    for (var j=0;j<10;j++) {
       globals.planets.add(new $planet.Planet([0,0]));
       globals.planets.add(new $asteroid.Asteroid([0,0]));
@@ -40,6 +40,7 @@ function main() {
       } else {
          gamejs.draw.rect(display, '#ee3333', new gamejs.Rect([globals.width * .05, 10], [globals.width * .9, 20]), 0);
       }
+      gamejs.draw.rect(display, '#33ee33', new gamejs.Rect([globals.width * .05, 40], [ship.health / ship.health_max * globals.width * .9, 20]), 0);
    };
    var draw_particles = function(msDuration) {
 
@@ -134,8 +135,8 @@ function main() {
          globals.projectiles.draw(mainSurface);
          globals.planets.update(msDuration);
          globals.planets.draw(mainSurface);
-         ship.update(msDuration);
-         ship.draw(mainSurface);
+         globals.ships.update(msDuration);
+         globals.ships.draw(mainSurface);
 
    });
    
