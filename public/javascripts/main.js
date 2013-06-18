@@ -23,9 +23,8 @@ function main() {
    // create ship
    var ship = new $ship.Ship([100, 100]);
    globals.ships.add(ship);
-   for (var j=0;j<10;j++) {
+   for (var j=0;j<3;j++) {
       globals.planets.add(new $planet.Planet([0,0]));
-      globals.planets.add(new $asteroid.Asteroid([0,0]));
    }
 
    var particleImage = gamejs.image.load('images/particle.png');
@@ -33,6 +32,39 @@ function main() {
 
    // game loop
    var mainSurface = gamejs.display.getSurface();
+   var attach_asteroid = function () {
+      if (globals.planets.sprites().length > 30) {
+         globals.planets.forEach(function(planet) {
+            if (Math.abs(ship._x - planet._x) > globals.width * 2) {
+               console.log("SOO WIDDEE")
+               planet.kill();
+            } else if (Math.abs(ship._y - planet._y) > globals.height * 2) {
+               console.log("SOO HIGH")
+               planet.kill();
+            }
+         })
+      }
+      if (globals.planets.sprites().length < 100) {
+         var rand1 = Math.random();
+         var rand2 = Math.random();
+         var xflip = 0, yflip = 0;
+         if (rand1 > .9) {
+            xflip = 1;
+         } else if (rand1 < .1) {
+            xflip = -1;
+         }
+         if (rand2 > .9) {
+            yflip = 1;
+         } else if (rand2 < .1) {
+            yflip = -1;
+         }
+         if ((xflip != 0) && (yflip != 0)) {
+            globals.planets.add(new $asteroid.Asteroid([ship._x + globals.width * xflip + Math.random() * globals.width / 2 * xflip,
+              ship._y + globals.height * yflip + Math.random() * globals.height / 2 * yflip]));
+         console.log(globals.planets)
+         }
+      }
+   }
    var draw_bars = function() {
       if (ship.o_timer == 0) {
          gamejs.draw.rect(display, '#ffffff', new gamejs.Rect([globals.width * .05, 10], [globals.width * .9, 20]), 0);
@@ -126,17 +158,19 @@ function main() {
    // msDuration = time since last tick() call
    gamejs.onTick(function(msDuration) {
          mainSurface.fill("#000000");
+         attach_asteroid();
+
          draw_particles(msDuration);
          draw_stars();
 
          // Draw heat and health
-         draw_bars();
          globals.projectiles.update(msDuration);
          globals.projectiles.draw(mainSurface);
          globals.planets.update(msDuration);
          globals.planets.draw(mainSurface);
          globals.ships.update(msDuration);
          globals.ships.draw(mainSurface);
+         draw_bars();
 
    });
    

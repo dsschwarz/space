@@ -100,7 +100,7 @@ Ship.prototype.update = function(msDuration) {
 Ship.prototype.jump = function() {
    if (this.jump_charge > min_jump_charge) {
       this.jump_charge -= min_jump_charge;
-      this._x += this.jump_charge*Math.cos(this.rotation/180*Math.PI)
+      this._x += this.jump_charge*Math.cos(this.rotation/180*Math.PI);
       this._y += this.jump_charge*Math.sin(this.rotation/180*Math.PI);
    }
    // this.check_in_bounds();

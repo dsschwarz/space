@@ -7,10 +7,12 @@ var base = require('base')
 var Asteroid = function(rect) {
    Asteroid.superConstructor.apply(this, arguments);
    this.rect = new gamejs.Rect(rect);
-   this._x = Math.random() * globals.width;
-   this._y = Math.random() * globals.height;
-   this.xspeed = Math.random() * 20 - 10;
-   this.yspeed = Math.random() * 20 - 10;
+   this._x = rect[0];
+   this._y = rect[1];
+   var speed = Math.random() * 30 + 20;
+   var dir = Math.random() * 2 * Math.PI;
+   this.xspeed = speed * Math.cos(dir);
+   this.yspeed = speed * Math.sin(dir);
 
    this.health_max = 60;
    this.health = this.health_max;
@@ -20,7 +22,8 @@ var Asteroid = function(rect) {
    var pos = globals.get_position([this._x, this._y], [.5, .5], this.image.getSize(), 0);
    this.rect = new gamejs.Rect(pos, this.image.getSize());
    return this;
-}
+};
+
 gamejs.utils.objects.extend(Asteroid, base.BaseSprite);
 Asteroid.prototype.update = function(msDuration) {
    this.move((msDuration/1000));
