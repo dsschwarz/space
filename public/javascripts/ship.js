@@ -50,11 +50,24 @@ var Ship = function(rect) {
    this.reload_time = [3,5];
    this.reload_timer = [0,0];
    // Delay between shots in milliseconds;
-   this.delay = [300,1000];
+   this.delay = [300,10];
    this.delay_timer = [0,0];
    this.weapon_firing = [false, false];
 
+   this.turret = {
+      image: gamejs.image.load("images/turret.png"),
+      rotation: 0,
+      center: [0.1, 0.5]
+   }
    // Display Properties
+   this.draw = function(surface) {
+      gamejs.draw.rect(surface, '#22cc22', new gamejs.Rect([this.rect.left, this.rect.top], [this.health / this.health_max * this.originalImage.getSize()[0], 2]), 0);
+
+      surface.blit(this.image, this.rect);
+      surface.blit(gamejs.transform.rotate(this.turret.image, this.turret.rotation), 
+         globals.get_position([this._x, this._y], this.turret.center, this.turret.image.getSize(), -this.turret.rotation))
+      return
+   }
    this.originalImage = gamejs.image.load("images/ship.png");
    this.chargeImage = gamejs.image.load("images/ship_charge.gif");
    this.image = gamejs.transform.rotate(this.originalImage, this.rotation);
@@ -92,11 +105,14 @@ Ship.prototype.update = function(msDuration) {
    } else {
       this.image = gamejs.transform.rotate(this.originalImage, this.rotation);
    }
+   var diff = $v.subtract(globals.mouse_pos, [this._x, this._y]);
+   this.turret.rotation = Math.atan2(diff[1], diff[0]) * 180 / Math.PI
    globals.offset = [(this._x - globals.width/2), (this._y - globals.height/2)];
    var position = globals.get_position([this._x, this._y], this.center, this.getSize(), -this.rotation);
    this.rect = new gamejs.Rect(position, this.image.getSize());
    this.radius = Math.min((this.originalImage.getSize()[0] * this.center[0]), (this.originalImage.getSize()[1] * this.center[1]));
 };
+
 Ship.prototype.jump = function() {
    if (this.jump_charge > min_jump_charge) {
       this.jump_charge -= min_jump_charge;
@@ -126,6 +142,17 @@ Ship.prototype.check_weapons = function(msDuration) {
 
    //Turret gun
    if (this.weapon_firing[1]) {
+      if ((this.delay_timer[1] <= 0) && (this.o_timer == 0)) {
+         var bomb = new $bomb.Bomb([this._x, this._y])
+         speed = this.bomb_speed;
+         console.log(this.turret)
+         bomb.xspeed = (this.xspeed + Math.cos(this.turret.rotation / 180 * Math.PI) * speed);
+         bomb.yspeed = (this.yspeed + Math.sin(this.turret.rotation / 180 * Math.PI) * speed);
+         globals.projectiles.add(bomb);
+         this.delay_timer[1] = this.delay[1];
+      } else {
+         this.delay_timer[1] -= msDuration;
+      }
    } else if(this.delay_timer[1] > 0) {
       this.delay_timer[1] -= msDuration;
    }
@@ -154,12 +181,6 @@ Ship.prototype.begin_charge = function() {
    if (this.o_timer == 0) {
       this.charging = true;
    }
-}
-Ship.prototype.point_to = function(coords) {
-   var diff = $v.subtract(coords, [this._x, this._y]);
-   console.log(diff)
-   // this.rotation = Math.atan2(diff[1], diff[0]) * 180 / Math.PI
-   // this.image = gamejs.transform.rotate(this.originalImage, this.rotation);
 };
 Ship.prototype.attach_particles = function() {
    var particleImage = gamejs.image.load('images/particle.png');

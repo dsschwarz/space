@@ -48,20 +48,19 @@ function main() {
          var rand1 = Math.random();
          var rand2 = Math.random();
          var xflip = 0, yflip = 0;
-         if (rand1 > .9) {
+         if (rand1 > .85) {
             xflip = 1;
-         } else if (rand1 < .1) {
+         } else if (rand1 < .15) {
             xflip = -1;
          }
-         if (rand2 > .9) {
+         if (rand2 > .85) {
             yflip = 1;
-         } else if (rand2 < .1) {
+         } else if (rand2 < .15) {
             yflip = -1;
          }
          if ((xflip != 0) && (yflip != 0)) {
             globals.planets.add(new $asteroid.Asteroid([ship._x + globals.width * xflip + Math.random() * globals.width / 2 * xflip,
               ship._y + globals.height * yflip + Math.random() * globals.height / 2 * yflip]));
-         console.log(globals.planets)
          }
       }
    }
@@ -205,22 +204,22 @@ function main() {
          }
       } else if (event.type === $e.MOUSE_MOTION) {
          if (display.rect.collidePoint(event.pos)) {
-            // ship.point_to(event.pos);
-            // console.log(event.pos)
-            globals.mouse_pos = event.pos;
+            // ship.point_to([event.pos[0] + globals.offset[0], event.pos[1] + globals.offset[1]]);
+            globals.mouse_pos = $v.add(event.pos, globals.offset)
          }
       } else if (event.type === $e.MOUSE_DOWN) {
          if (display.rect.collidePoint(event.pos)) {
+            ship.weapon_firing[1] = true;
          }
       } else if (event.type === $e.MOUSE_UP) {
-         if (display.rect.collidePoint(event.pos)) {
-         }
+         ship.weapon_firing[1] = false;
       };
    });
 }
 
 
 gamejs.preload(['images/ship.png']);
+gamejs.preload(['images/turret.png']);
 gamejs.preload(['images/ship_charge.gif']);
 gamejs.preload(['images/particle.png']);
 gamejs.preload(['images/star.png']);
