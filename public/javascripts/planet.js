@@ -12,6 +12,7 @@ var Planet = function(rect) {
    this.xspeed = 0;
    this.yspeed = 0;
 
+   this.damage = 40;
    this.originalImage = gamejs.image.load("images/wiki.png");
    this.image = this.originalImage; 
    var pos = globals.get_position([this._x, this._y], [.5, .5], this.image.getSize(), 0);

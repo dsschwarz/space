@@ -23,7 +23,7 @@ var BaseSprite = function (rect) {
 	// 1 if rotating right, -1 if left, else 0.
 	this.rotating = 0;
 
-
+	this.damage = 10;
    this.health_max = 100;
    this.health = this.health_max;
 
@@ -66,12 +66,10 @@ var BaseSprite = function (rect) {
 		}
 		this.rotation += this.angular_v;
 		if (this.rotation > 360) {
-		  console.log("Decrementing Rotation by 360: " + this.rotation)
 		  this.rotation = this.rotation%360;
 		}
 		while (this.rotation < 0) {
 		  this.rotation += 360;
-		  console.log("Increasing rotation: " + this.rotation)
 		}
 	}
 	return this;

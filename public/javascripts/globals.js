@@ -2,12 +2,16 @@ var gamejs = require('gamejs');
 exports.height = 600;
 exports.width  = 800;
 exports.mouse_pos = [0, 0];
+exports.mouse_pixels = [0, 0];
 exports.particles = [];
 exports.projectiles = new gamejs.sprite.Group();
 exports.planets = new gamejs.sprite.Group();
 exports.ships = new gamejs.sprite.Group();
 exports.offset = [0, 0];
 function get_position(true_pos, center, dim, angle) {
+	center = center || [0, 0];
+	dim = dim || [0, 0];
+	angle = angle || 0;
 	if (angle > 360) {
 		angle = angle%360;
 	} while (angle < 0) {
@@ -35,5 +39,14 @@ function get_xy(angle, l1, l2, l3, true_pos) {
 	var y = true_pos[1] - l1*cos - l3*sin - exports.offset[1];
 	return [x, y];
 }
-
+function groupCollideLine(group, pointA, pointB) {
+	var colObjs = [];
+	group.forEach(function(obj) {
+		if (obj.rect.collideLine(pointA, pointB)) {
+			colObjs.push(obj);
+		}
+	})
+	return colObjs;
+}
 exports.get_position = get_position;
+exports.groupCollideLine = groupCollideLine;

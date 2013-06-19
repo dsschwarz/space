@@ -36,10 +36,8 @@ function main() {
       if (globals.planets.sprites().length > 30) {
          globals.planets.forEach(function(planet) {
             if (Math.abs(ship._x - planet._x) > globals.width * 2) {
-               console.log("SOO WIDDEE")
                planet.kill();
             } else if (Math.abs(ship._y - planet._y) > globals.height * 2) {
-               console.log("SOO HIGH")
                planet.kill();
             }
          })
@@ -156,6 +154,7 @@ function main() {
    };
    // msDuration = time since last tick() call
    gamejs.onTick(function(msDuration) {
+         globals.mouse_pos = $v.add(globals.mouse_pixels, globals.offset)
          mainSurface.fill("#000000");
          attach_asteroid();
 
@@ -189,6 +188,8 @@ function main() {
             ship.jump();
          } else if (event.key == $e.K_SPACE) {
             ship.stop_firing();
+         } else if (event.key == $e.K_ALT) {
+            ship.shielded = false;
          }
       } else if (event.type === $e.KEY_DOWN) {
          if (event.key == $e.K_w) {
@@ -201,10 +202,17 @@ function main() {
             ship.begin_charge();
          } else if (event.key == $e.K_SPACE) {
             ship.fire();
+         } else if (event.key == $e.K_ALT) {
+            ship.shielded = true;
+         } else if (event.key == $e.K_q) {
+            ship.weapon_switch(0);
+         } else if (event.key == $e.K_e) {
+            ship.weapon_switch(1);
          }
       } else if (event.type === $e.MOUSE_MOTION) {
          if (display.rect.collidePoint(event.pos)) {
             // ship.point_to([event.pos[0] + globals.offset[0], event.pos[1] + globals.offset[1]]);
+            globals.mouse_pixels = event.pos;
             globals.mouse_pos = $v.add(event.pos, globals.offset)
          }
       } else if (event.type === $e.MOUSE_DOWN) {
