@@ -14,6 +14,7 @@ var $e = require('gamejs/event');
 var globals = require('globals');
 var base = require('base')
 var $bomb = require('bomb');
+var $rocket = require('rocket');
 
 var max_jump_charge = 1000;
 var min_jump_charge = 100;
@@ -25,9 +26,7 @@ var Ship = function(rect) {
    // Physics Properties 
    this.accleration = 120; // How fast ship accelerates (constant)
    this.deceleration = .52; // Percentage ship slows per second
-   this.angular_v = 0; // Angular velocity (how fast it's rotating; deg/s)
-   this.angular_a = 15; // How fast ship turns (constant)
-   this.angular_d = 3; // Percentage angular velocity slows per second
+   this.angular_v = 150; // Angular velocity (how fast it's rotating; deg/s)
 
    // Special Properties
    this.jump_charge = 0;
@@ -38,7 +37,8 @@ var Ship = function(rect) {
    this.heat_max = 300;
    this.cool_rate = 10; // How fast heat//overheat dissipates
    this.overheat = 30; // How long ship stays overheated
-   this.bomb_speed = 200;
+   this.bomb_speed = 300;
+   this.rocket_speed = 20;
 
    // Flags
    this.charging = false;
@@ -51,7 +51,7 @@ var Ship = function(rect) {
    this.reload_time = [3,5];
    this.reload_timer = [0,0];
    // Delay between shots in milliseconds;
-   this.delay = [300,100];
+   this.delay = [[300, 0, 1000],[100, 0, 700]];
    this.delay_timer = [0,0];
    this.weapon_firing = [false, false];
    this.weapon_damage = [30, 4];
@@ -95,18 +95,30 @@ var Ship = function(rect) {
    // Display Properties
    this.draw = function(surface) {
       gamejs.draw.rect(surface, '#22cc22', new gamejs.Rect([this.rect.left, this.rect.top], [this.health / this.health_max * this.originalImage.getSize()[0], 2]), 0);
-      for (var i = 1; i >= 0; i--) {
-         var las = this.laser[i];
-         if ((las.charging) > 0 || (las.fade > 0)) {
-            gamejs.draw.line(surface, las.color, las.start_pos, las.end_pos, las.width);
-         }
-      };
+      var las = this.laser[0];
+      if ((las.charging) > 0 || (las.fade > 0)) {
+         gamejs.draw.line(surface, las.color, las.start_pos, las.end_pos, las.width);
+      }
       surface.blit(this.image, this.rect);
-      
+      var las = this.laser[1];
+      if ((las.charging) > 0 || (las.fade > 0)) {
+         gamejs.draw.line(surface, las.color, las.start_pos, las.end_pos, las.width);
+      }
       surface.blit(gamejs.transform.rotate(this.turret.image, this.turret.rotation), 
          globals.get_position([this._x, this._y], this.turret.center, this.turret.image.getSize(), -this.turret.rotation))
 
       return
+   }
+   this.rotate = function(_s) {
+      if(this.o_timer == 0) {
+         this.rotation += this.angular_v * this.rotating * _s;
+         if (this.rotation > 360) {
+           this.rotation = this.rotation%360;
+         }
+         while (this.rotation < 0) {
+           this.rotation += 360;
+         }
+      }
    }
    this.originalImage = gamejs.image.load("images/ship.png");
    this.chargeImage = gamejs.image.load("images/ship_charge.gif");
@@ -161,7 +173,6 @@ Ship.prototype.update = function(msDuration) {
    this.rect = new gamejs.Rect(position, this.image.getSize());
    this.radius = Math.min((this.originalImage.getSize()[0] * this.center[0]), (this.originalImage.getSize()[1] * this.center[1]));
 };
-
 Ship.prototype.jump = function() {
    if (this.jump_charge > min_jump_charge) {
       this.jump_charge -= min_jump_charge;
@@ -177,14 +188,23 @@ Ship.prototype.check_weapons = function(msDuration) {
       if ((this.delay_timer[0] <= 0) && (this.o_timer == 0)) {
          if (this.weapon_type[0] == 0) {
             var bomb = new $bomb.Bomb([this._x, this._y])
-            speed = this.bomb_speed;
+            var speed = this.bomb_speed;
             bomb.xspeed = (this.xspeed + Math.cos(this.rotation / 180 * Math.PI) * speed);
             bomb.yspeed = (this.yspeed + Math.sin(this.rotation / 180 * Math.PI) * speed);
             console.log(globals.projectiles);
             globals.projectiles.add(bomb);
-            this.delay_timer[0] = this.delay[0];
+            this.delay_timer[0] = this.delay[0][0];
          } else if((this.weapon_type[0] == 1) && (this.laser[0].charging == 0) && (this.laser[0].fade == 0)) {
             this.laser[0].charging = this.laser[0].charge_time;
+         } else if (this.weapon_type[0] == 2) {
+            var rocket = new $rocket.Rocket([this._x, this._y]);
+            var speed = this.rocket_speed;
+            rocket.xspeed = (this.xspeed + Math.cos(this.rotation / 180 * Math.PI) * speed);
+            rocket.yspeed = (this.yspeed + Math.sin(this.rotation / 180 * Math.PI) * speed);
+            rocket.rotation = this.rotation;
+            console.log("ROCKET");
+            globals.projectiles.add(rocket);
+            this.delay_timer[0] = this.delay[0][2];
          }
       } else {
          this.delay_timer[0] -= msDuration;
@@ -198,13 +218,13 @@ Ship.prototype.check_weapons = function(msDuration) {
       if ((this.delay_timer[1] <= 0) && (this.o_timer == 0)) {
          if (this.weapon_type[1] == 0) {
             var bomb = new $bomb.Bomb([this._x, this._y])
-            speed = this.bomb_speed;
+            var speed = this.bomb_speed;
             console.log(this.turret)
             bomb.xspeed = (this.xspeed + Math.cos(this.turret.rotation / 180 * Math.PI) * speed);
             bomb.yspeed = (this.yspeed + Math.sin(this.turret.rotation / 180 * Math.PI) * speed);
             bomb.damage = 4;
             globals.projectiles.add(bomb);
-            this.delay_timer[1] = this.delay[1];
+            this.delay_timer[1] = this.delay[1][0];
          } else if ((this.weapon_type[1] == 1) && (this.laser[1].charging == 0) && (this.laser[1].fade == 0)) {
             this.laser[1].charging = this.laser[1].charge_time;
          }
@@ -281,6 +301,21 @@ Ship.prototype.begin_charge = function() {
       this.charging = true;
    }
 };
+Ship.prototype.move = function(_s) {
+   // Call this from update. Otherwise, acclr depends on comp specs
+   if (this.accelerating && (this.o_timer == 0)) {
+      for (var i = 0; i < 3; i++) {
+         this.attach_particles();
+      }
+      this.xspeed += Math.cos(this.rotation/180*Math.PI)*this.accleration*_s;
+      this.yspeed += Math.sin(this.rotation/180*Math.PI)*this.accleration*_s;
+   };
+   this.yspeed *= 1-(this.deceleration * _s);
+   this.xspeed *= 1-(this.deceleration * _s);
+   this._x += this.xspeed * _s;
+   this._y += this.yspeed * _s;
+   // this.check_in_bounds();
+};
 Ship.prototype.attach_particles = function() {
    var particleImage = gamejs.image.load('images/particle.png');
    var speed = -40 - Math.random() * 20;
@@ -332,7 +367,7 @@ Ship.prototype.stop_firing = function() {
 }
 Ship.prototype.weapon_switch = function(num) {
    this.weapon_type[num] += 1;
-   if (this.weapon_type[num] > 1) {
+   if (this.weapon_type[num] > 2) {
       this.weapon_type[num] = 0;
    }
 }

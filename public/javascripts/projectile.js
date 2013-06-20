@@ -17,7 +17,7 @@ var Projectile = function(rect) {
    this.xspeed = 0;
    this.yspeed = 0;
 
-   this.originalImage = gamejs.image.load("images/wiki.png");
+   this.originalImage = gamejs.image.load("images/rocket.png");
    this.image = gamejs.transform.scale(this.originalImage, [20, 20]);
    this.rect = new gamejs.Rect([this._x, this._y]);
    this.draw = function(surface) {

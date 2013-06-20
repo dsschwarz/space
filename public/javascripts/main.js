@@ -233,5 +233,6 @@ gamejs.preload(['images/particle.png']);
 gamejs.preload(['images/star.png']);
 gamejs.preload(['images/wiki.png']);
 gamejs.preload(['images/asteroid.png']);
+gamejs.preload(['images/rocket.png']);
 
 gamejs.ready(main);

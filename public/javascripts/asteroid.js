@@ -17,6 +17,7 @@ var Asteroid = function(rect) {
    this.health_max = 60;
    this.health = this.health_max;
    this.angular_v = Math.random() * 4 - 2;
+   this.rotating = 1;
    this.originalImage = gamejs.image.load("images/asteroid.png");
    this.image = this.originalImage;
    var pos = globals.get_position([this._x, this._y], [.5, .5], this.image.getSize(), 0);
@@ -26,7 +27,8 @@ var Asteroid = function(rect) {
 
 gamejs.utils.objects.extend(Asteroid, base.BaseSprite);
 Asteroid.prototype.update = function(msDuration) {
-   this.move((msDuration/1000));
+   this._x += this.xspeed * (msDuration/1000);
+   this._y += this.yspeed * (msDuration/1000);
    this.rotate((msDuration/1000));
    this.image = gamejs.transform.rotate(this.originalImage, this.rotation);
    var pos = globals.get_position([this._x, this._y], [.5, .5], this.image.getSize(), 0);

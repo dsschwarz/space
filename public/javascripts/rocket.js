@@ -2,17 +2,20 @@ var gamejs = require('gamejs');
 var $p = require('projectile');
 var globals = require('globals');
 
-var Bomb = function(rect) {
-   Bomb.superConstructor.apply(this, arguments);
+var Rocket = function(rect) {
+   Rocket.superConstructor.apply(this, arguments);
    this.rect = new gamejs.Rect(rect);
-   this.originalImage = gamejs.image.load('images/wiki.png');
-   this.image = gamejs.transform.scale(this.originalImage, [5,5]);
-   this.damage = 30;
+   this.originalImage = gamejs.transform.scale(this.originalImage, [30,8]);
+   this.image = gamejs.transform.rotate(this.originalImage, this.rotation);
+   this.damage = 50;
+   this.acceleration = 400;
    this.timer = 15;
 }
-gamejs.utils.objects.extend(Bomb, $p.Projectile);
-Bomb.prototype.update = function(msDuration) {
+gamejs.utils.objects.extend(Rocket, $p.Projectile);
+Rocket.prototype.update = function(msDuration) {
 	var _s = msDuration/1000;
+	this.xspeed += Math.cos(this.rotation/180*Math.PI)*this.acceleration*_s;
+	this.yspeed += Math.sin(this.rotation/180*Math.PI)*this.acceleration*_s;
 	this._x += this.xspeed * _s;
 	this._y += this.yspeed * _s;
 	var collision_planets = gamejs.sprite.spriteCollide(this, globals.planets, false);
@@ -27,7 +30,8 @@ Bomb.prototype.update = function(msDuration) {
 			}
 		});
 	}
-	var pos = globals.get_position([this._x, this._y], [.5, .5], this.image.getSize(), 0);
+	this.image = gamejs.transform.rotate(this.originalImage, this.rotation);
+	var pos = globals.get_position([this._x, this._y], [.25, .5], this.originalImage.getSize(), this.rotation);
 	this.rect.left = pos[0];
 	this.rect.top = pos[1];
 	if (this.timer < 0) {
@@ -36,9 +40,9 @@ Bomb.prototype.update = function(msDuration) {
 		this.timer -= _s;
 	}
 }
-Bomb.prototype.explode = function() {
+Rocket.prototype.explode = function() {
 	this.kill();
 }
 
 
-exports.Bomb = Bomb;
+exports.Rocket = Rocket;

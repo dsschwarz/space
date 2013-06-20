@@ -15,9 +15,7 @@ var BaseSprite = function (rect) {
 	this.yspeed = 0;
 	this.accelerating = false;
 
-	this.angular_v = 0; // Angular velocity (how fast it's rotating; deg/s)
-	this.angular_a = 0; // How fast object turns (constant)
-	this.angular_d = 0; // Percentage angular velocity slows per second
+	this.angular_v = 100; // Angular velocity (how fast it's rotating; deg/s)
 	// rotation is clockwise from positive x-axis (gamejs thing)
 	this.rotation = 0;
 	// 1 if rotating right, -1 if left, else 0.
@@ -39,32 +37,8 @@ var BaseSprite = function (rect) {
 		surface.blit(this.image, this.rect);
 		return
 	}
-	this.move = function(_s) {
-	   // Call this from update. Otherwise, acclr depends on comp specs
-	   if (this.accelerating && (this.o_timer == 0)) {
-	      for (var i = 0; i < 3; i++) {
-	         this.attach_particles();
-	      }
-	      this.xspeed += Math.cos(this.rotation/180*Math.PI)*this.accleration*_s;
-	      this.yspeed += Math.sin(this.rotation/180*Math.PI)*this.accleration*_s;
-	   };
-	   this.yspeed *= 1-(this.deceleration * _s);
-	   this.xspeed *= 1-(this.deceleration * _s);
-	   this._x += this.xspeed * _s;
-	   this._y += this.yspeed * _s;
-	   // this.check_in_bounds();
-	};
 	this.rotate = function(_s) {
-		if (this.o_timer == 0) {
-		  this.angular_v += this.rotating * this.angular_a * _s;
-		}
-		if (Math.abs(this.angular_d * _s) < 1) {
-		  this.angular_v -= this.angular_v*this.angular_d * _s;
-		} else {
-			console.log(this.angular_v)
-			this.angular_v = 0;
-		}
-		this.rotation += this.angular_v;
+		this.rotation += this.angular_v * this.rotating * _s;
 		if (this.rotation > 360) {
 		  this.rotation = this.rotation%360;
 		}
