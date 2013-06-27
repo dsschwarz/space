@@ -145,7 +145,7 @@ function main() {
    gamejs.onEvent(function(event) {
       if (event.type === $e.KEY_UP) {
          if (event.key == $e.K_w) {
-            socket.emit('end_accelerate');
+            socket.emit('accelerate', false);
          } else if (event.key == $e.K_d) {
             socket.emit('end_rotate', 1);
          } else if (event.key == $e.K_a) {
@@ -157,7 +157,7 @@ function main() {
          }
       } else if (event.type === $e.KEY_DOWN) {
          if (event.key == $e.K_w) {
-            socket.emit('accelerate');
+            socket.emit('accelerate', true);
          } else if (event.key == $e.K_d) {
             socket.emit('rotate', 1);
          } else if (event.key == $e.K_a) {

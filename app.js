@@ -29,6 +29,7 @@ if ('development' == app.get('env')) {
   app.use(express.errorHandler());
 }
 
+io.
 
 socket = require('./socket')
   , gamejs = require('./lib/gamejs')
@@ -58,6 +59,8 @@ var ontick = function () {
 	$g.projectiles.update(msDuration);
 	$g.planets.update(msDuration);
 	$g.ships.update(msDuration);
+
+  io.sockets.emit('datadump', {msDuration: msDuration})
 };
 setInterval(ontick, 10);
 var TIMER_LASTCALL = Date.now();
