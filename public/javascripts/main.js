@@ -10,6 +10,7 @@ var $ship = require('ship');
 var $proj = require('projectile');
 var $planet = require('planet');
 var $asteroid = require('asteroid');
+var socket = require('socket').socket;
 
 
 /**
@@ -32,36 +33,6 @@ function main() {
 
    // game loop
    var mainSurface = gamejs.display.getSurface();
-   var attach_asteroid = function () {
-      if (globals.planets.sprites().length > 30) {
-         globals.planets.forEach(function(planet) {
-            if (Math.abs(ship._x - planet._x) > globals.width * 2) {
-               planet.kill();
-            } else if (Math.abs(ship._y - planet._y) > globals.height * 2) {
-               planet.kill();
-            }
-         })
-      }
-      if (globals.planets.sprites().length < 100) {
-         var rand1 = Math.random();
-         var rand2 = Math.random();
-         var xflip = 0, yflip = 0;
-         if (rand1 > .85) {
-            xflip = 1;
-         } else if (rand1 < .15) {
-            xflip = -1;
-         }
-         if (rand2 > .85) {
-            yflip = 1;
-         } else if (rand2 < .15) {
-            yflip = -1;
-         }
-         if ((xflip != 0) && (yflip != 0)) {
-            globals.planets.add(new $asteroid.Asteroid([ship._x + globals.width * xflip + Math.random() * globals.width / 2 * xflip,
-              ship._y + globals.height * yflip + Math.random() * globals.height / 2 * yflip]));
-         }
-      }
-   }
    var draw_bars = function() {
       if (ship.o_timer == 0) {
          gamejs.draw.rect(display, '#ffffff', new gamejs.Rect([globals.width * .05, 10], [globals.width * .9, 20]), 0);
@@ -156,7 +127,6 @@ function main() {
    gamejs.onTick(function(msDuration) {
          globals.mouse_pos = $v.add(globals.mouse_pixels, globals.offset)
          mainSurface.fill("#000000");
-         attach_asteroid();
 
          draw_particles(msDuration);
          draw_stars();
@@ -175,35 +145,27 @@ function main() {
    gamejs.onEvent(function(event) {
       if (event.type === $e.KEY_UP) {
          if (event.key == $e.K_w) {
-            ship.accelerating = false;
+            socket.emit('end_accelerate');
          } else if (event.key == $e.K_d) {
-            if (ship.rotating == 1) {
-               ship.rotating = 0;
-            }
+            socket.emit('end_rotate', 1);
          } else if (event.key == $e.K_a) {
-            if (ship.rotating == -1) {
-               ship.rotating = 0;
-            }        
+            socket.emit('end_rotate', -1);
          } else if (event.key == $e.K_SHIFT) {
-            ship.jump();
+            socket.emit('end_shield');
          } else if (event.key == $e.K_SPACE) {
-            ship.stop_firing();
-         } else if (event.key == $e.K_ALT) {
-            ship.shielded = false;
+            socket.emit('end_fire', 0);
          }
       } else if (event.type === $e.KEY_DOWN) {
          if (event.key == $e.K_w) {
-            ship.accelerating = true;
+            socket.emit('accelerate');
          } else if (event.key == $e.K_d) {
-            ship.rotating = 1;
+            socket.emit('rotate', 1);
          } else if (event.key == $e.K_a) {
-            ship.rotating = -1;
+            socket.emit('rotate', -1);
          } else if (event.key == $e.K_SHIFT) {
-            ship.begin_charge();
+            socket.emit('shield');
          } else if (event.key == $e.K_SPACE) {
-            ship.fire();
-         } else if (event.key == $e.K_ALT) {
-            ship.shielded = true;
+            socket.emit('fire', 0);
          } else if (event.key == $e.K_q) {
             ship.weapon_switch(0);
          } else if (event.key == $e.K_e) {
@@ -217,10 +179,10 @@ function main() {
          }
       } else if (event.type === $e.MOUSE_DOWN) {
          if (display.rect.collidePoint(event.pos)) {
-            ship.weapon_firing[1] = true;
+            socket.emit('fire', 1);
          }
       } else if (event.type === $e.MOUSE_UP) {
-         ship.weapon_firing[1] = false;
+         socket.emit('end_fire', 1);
       };
    });
 }

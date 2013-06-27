@@ -40,7 +40,6 @@
 
 	var isWebWorker = this.importScripts !== undefined;
 
-
 	var head = !isWebWorker && document.getElementsByTagName('head')[0];
 
 	// Shortcut to native hasOwnProperty
