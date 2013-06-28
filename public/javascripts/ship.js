@@ -140,8 +140,10 @@ Ship.prototype.update = function(msDuration) {
    }
    this.image = gamejs.transform.rotate(this.originalImage, this.rotation);
    var diff = $v.subtract(globals.mouse_pos, [this._x, this._y]);
-   this.turret.rotation = Math.atan2(diff[1], diff[0]) * 180 / Math.PI
-   globals.offset = [(this._x - globals.width/2), (this._y - globals.height/2)];
+   if (this.mainShip) {
+      this.turret.rotation = Math.atan2(diff[1], diff[0]) * 180 / Math.PI;
+      globals.offset = [(this._x - globals.width/2), (this._y - globals.height/2)];
+   };
    var position = globals.get_position([this._x, this._y], this.center, this.getSize(), -this.rotation);
    this.rect = new gamejs.Rect(position, this.image.getSize());
    this.radius = Math.min((this.originalImage.getSize()[0] * this.center[0]), (this.originalImage.getSize()[1] * this.center[1]));

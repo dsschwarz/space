@@ -7,8 +7,10 @@ exports.particles = [];
 exports.players = [];
 exports.projectiles = new gamejs.sprite.Group();
 exports.planets = new gamejs.sprite.Group();
+exports.asteroids = new gamejs.sprite.Group();
 exports.ships = new gamejs.sprite.Group();
 exports.offset = [0, 0];
+exports.connected = false;
 function get_position(true_pos, center, dim, angle) {
 	center = center || [0, 0];
 	dim = dim || [0, 0];

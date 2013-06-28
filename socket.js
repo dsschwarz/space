@@ -1,29 +1,11 @@
 
 exports.io = function(socket) {
 	console.log("A user connected");
-	socket.on('accelerate', function(acclr){
-		var ship = getShip(current_player(socket).number);
-		console.log(ship);
-		ship.accelerating = acclr;
-		// socket.emit("accelerate", acclr);
-	});
-    socket.on('rotate', function(dir){
-		var ship = getShip(current_player(socket).number);
-		console.log(ship);
-		console.log(current_player(socket));
-		ship.rotating = dir;
-		// socket.emit("rotate", player.ship.rotating);
-    });
-    socket.on('end_rotate', function(dir){
-		var ship = getShip(current_player(socket).number);
-		if (ship.rotating === dir) {
-			ship.rotating = 0;
-		}
-		// socket.emit("rotate", player.ship.rotating);
-    });
+	socket.set('playing', false);
     socket.on('join', function(name){
     	var player = new $player.Player(name)
     	socket.set('player', player);
+    	socket.set('playing', true);
     	globals.players.push(player);
     	var ship = new $ship.Ship([0,0]);
     	ship.number = player.number;
@@ -32,7 +14,38 @@ exports.io = function(socket) {
     	socket.broadcast.emit('new_player', player);
     	socket.emit('join_success', globals.players);
     });
-    socket.on('disconnect', function(data){
+	socket.on('accelerate', function(acclr){
+		var ship = getShip(current_player(socket).number);
+		console.log("accelerating");
+		ship.accelerating = acclr;
+		// socket.emit("accelerate", acclr);
+	});
+    socket.on('rotate', function(dir){
+		var ship = getShip(current_player(socket).number);
+		console.log("rotating");
+		ship.rotating = dir;
+		// socket.emit("rotate", player.ship.rotating);
+    });
+    socket.on('fire', function(wpn_number) {
+    	var ship = getShip(current_player(socket).number);
+    	ship.weapon_firing[wpn_number] = 1;
+    });
+    socket.on('weapon_switch', function(wpn_number) {
+    	var ship = getShip(current_player(socket).number);
+    	ship.weapon_switch(wpn_number);
+    });
+    socket.on('end_fire', function(wpn_number) {
+    	var ship = getShip(current_player(socket).number);
+    	ship.weapon_firing[wpn_number] = 0;
+    });
+    socket.on('end_rotate', function(dir){
+		var ship = getShip(current_player(socket).number);
+		if (ship.rotating === dir) {
+			ship.rotating = 0;
+		}
+		// socket.emit("rotate", player.ship.rotating);
+    });
+    socket.on('disconnect', function(){
     	var temp = [];
     	var number = NaN;
     	socket.get('player', function(e , player){
@@ -45,14 +58,14 @@ exports.io = function(socket) {
 			};
     	});
     	globals.players = temp;
-    	temp = [];
+    	temp = new gamejs.sprite.Group();
     	globals.ships.forEach(function(ship){
 			if (number != ship.number) {
-				temp.push(ship);
+				temp.add(ship);
 			};
     	});
     	globals.ships = temp;
-    	socket.broadcast.emit('player_dc', temp);
+    	socket.broadcast.emit('player_dc', globals.players);
     });
 };
 var current_player = function(socket){
@@ -62,14 +75,22 @@ var current_player = function(socket){
 	});
 	return player;
 };
+exports.current_player = current_player;
 var getShip = function(number) {
 	var s = {};
 	globals.ships.forEach(function(ship){
 		if (ship.number === number) {
-		console.log(ship.number)
+		console.log(ship.number);
 		console.log(number)
 			s = ship;
 		};
 	});
 	return s;
+}
+exports.isPlaying = function(socket) {
+	var flag = false;
+	socket.get('playing', function(e, p){
+		flag = p;
+	});
+	return flag;
 }
