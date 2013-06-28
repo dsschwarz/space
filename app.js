@@ -29,7 +29,7 @@ if ('development' == app.get('env')) {
   app.use(express.errorHandler());
 }
 
-io.
+io.set('log level', 1);
 
 socket = require('./socket')
   , gamejs = require('./lib/gamejs')
@@ -43,7 +43,8 @@ socket = require('./socket')
   , $p = require('./lib/projectile')
   , bomb = require('./lib/bomb')
   , rocket = require('./lib/rocket')
-  , $player = require('./player');
+  , $player = require('./player')
+  , templates = require('./lib/templates')
 
 app.get('/', routes.index);
 app.get('/map', game.map);
