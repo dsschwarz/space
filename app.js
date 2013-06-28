@@ -49,8 +49,6 @@ socket = require('./socket')
 app.get('/', routes.index);
 app.get('/map', game.map);
 
-var ship = new $ship.Ship([100, 100]);
-$g.ships.add(ship);
 
 var ontick = function () {
 	$g.mouse_pos = $v.add($g.mouse_pixels, $g.offset)
@@ -60,8 +58,14 @@ var ontick = function () {
 	$g.projectiles.update(msDuration);
 	$g.planets.update(msDuration);
 	$g.ships.update(msDuration);
-
-  io.sockets.emit('datadump', {msDuration: msDuration})
+  var ships = [];
+  $g.ships.forEach(function(ship) {
+    ships.push(new templates.Ship(ship));
+  });
+  if(ships.length > 0) {
+    console.log(ships);
+  }
+  io.sockets.emit('datadump', {msDuration: msDuration, ships: ships});
 };
 setInterval(ontick, 10);
 var TIMER_LASTCALL = Date.now();
