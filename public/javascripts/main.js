@@ -22,8 +22,6 @@ function main() {
    var display = gamejs.display.setMode([globals.width, globals.height]);
    gamejs.display.setCaption("Example Sprites");
    // create ship
-   var ship = new $ship.Ship([100, 100]);
-   globals.ships.add(ship);
 
    var particleImage = gamejs.image.load('images/particle.png');
    var starImage = gamejs.image.load('images/star.png');
@@ -31,6 +29,7 @@ function main() {
    // game loop
    var mainSurface = gamejs.display.getSurface();
    var draw_bars = function() {
+      var ship = globals.mainShip;
       if (ship.o_timer == 0) {
          gamejs.draw.rect(display, '#ffffff', new gamejs.Rect([globals.width * .05, 10], [globals.width * .9, 20]), 0);
          gamejs.draw.rect(display, '#3333ee', new gamejs.Rect([globals.width * .05, 10], [ship.heat / ship.heat_max * globals.width * .9, 20]), 0);
@@ -74,6 +73,7 @@ function main() {
       };
    }
    var draw_stars = function() {
+      var ship = globals.mainShip;
       var bounds = starGroup.bounds;
       var height = 0;
       var width = 0;
@@ -143,7 +143,6 @@ function main() {
    
    gamejs.onEvent(function(event) {
       if (globals.connected) {
-         console.log(event.key);
          if (event.type === $e.KEY_UP) {
             if (event.key == $e.K_w) {
                socket.emit('accelerate', false);

@@ -12,8 +12,10 @@ socket.on('datadump', function(data){
   data.ships.forEach(function(ship){
     var s = new $ship.Ship([0,0]);
     update_attributes(s, ship);
-    if (s.number === data.number)
+    if (s.number === data.number) {
       s.mainShip = true;
+      $g.mainShip = s;
+    }
     temp.add(s);
   });
   $g.ships= temp;

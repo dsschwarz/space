@@ -9,6 +9,7 @@ exports.projectiles = new gamejs.sprite.Group();
 exports.planets = new gamejs.sprite.Group();
 exports.asteroids = new gamejs.sprite.Group();
 exports.ships = new gamejs.sprite.Group();
+exports.mainShip = {};
 exports.offset = [0, 0];
 exports.connected = false;
 function get_position(true_pos, center, dim, angle) {
@@ -20,6 +21,10 @@ function get_position(true_pos, center, dim, angle) {
 	} while (angle < 0) {
 		angle += 360;
 	}
+	if (angle === 0) {
+		return [true_pos[0] - center[0] * dim[0] -exports.offset[0],
+			true_pos[1] - center[1] * dim[1] -exports.offset[1]]
+	};
 	var la = dim[1]*center[1]
 	var lb = dim[0]*center[0]
 	var lc = dim[1]*(1-center[1])

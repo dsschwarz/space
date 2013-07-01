@@ -9,6 +9,7 @@ var Bomb = function(rect) {
    this.image = gamejs.transform.scale(this.originalImage, [5,5]);
    this.damage = 30;
    this.timer = 15;
+   return this;
 }
 gamejs.utils.objects.extend(Bomb, $p.Projectile);
 Bomb.prototype.update = function(msDuration) {

@@ -33,7 +33,6 @@ Projectile.prototype.update = function(msDuration) {
 	var pos = globals.get_position([this._x, this._y], [.5, .5], this.getSize(), 0);
 	this.rect.left = pos[0];
 	this.rect.top = pos[1];
-   this.radius = Math.min((this.originalImage.width * this.center[0]), (this.originalImage.height * this.center[1]));
 
 }
 

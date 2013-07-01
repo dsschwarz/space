@@ -16,13 +16,11 @@ exports.io = function(socket) {
     });
 	socket.on('accelerate', function(acclr){
 		var ship = getShip(current_player(socket).number);
-		console.log("accelerating");
 		ship.accelerating = acclr;
 		// socket.emit("accelerate", acclr);
 	});
     socket.on('rotate', function(dir){
 		var ship = getShip(current_player(socket).number);
-		console.log("rotating");
 		ship.rotating = dir;
 		// socket.emit("rotate", player.ship.rotating);
     });
@@ -80,8 +78,6 @@ var getShip = function(number) {
 	var s = {};
 	globals.ships.forEach(function(ship){
 		if (ship.number === number) {
-		console.log(ship.number);
-		console.log(number)
 			s = ship;
 		};
 	});

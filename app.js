@@ -1,4 +1,8 @@
 
+
+
+
+
 /**
  * Module dependencies.
  */
@@ -58,15 +62,19 @@ for (var i = 10; i >= 0; i--) {
 for (var j=0;j<3;j++) {
   $g.planets.add(new $planet.Planet([0,0]));
 }
+var timer = 0;
 var ontick = function () {
-	$g.mouse_pos = $v.add($g.mouse_pixels, $g.offset)
 	var msDuration = (Date.now() - TIMER_LASTCALL);
 	TIMER_LASTCALL = Date.now();
   $g.projectiles.update(msDuration);
 	$g.asteroids.update(msDuration);
 	$g.ships.update(msDuration);
 
-  datadump();
+  timer += msDuration;
+  if (timer > 200) {
+    timer = 0;
+    datadump();
+  }
   
 };
 setInterval(ontick, 10);
