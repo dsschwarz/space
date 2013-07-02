@@ -14,7 +14,6 @@ var express = require('express')
   , path = require('path')
   , app = express()
   , server = require('http').createServer(app)
-  , io = require('socket.io').listen(server);
 
 // all environments
 app.set('port', process.env.PORT || 3000);
@@ -33,6 +32,7 @@ if ('development' == app.get('env')) {
   app.use(express.errorHandler());
 }
 
+io = require('socket.io').listen(server);
 io.set('log level', 1);
 
 $socket = require('./socket')
@@ -71,7 +71,7 @@ var ontick = function () {
 	$g.ships.update(msDuration);
 
   timer += msDuration;
-  if (timer > 200) {
+  if (timer > 300) {
     timer = 0;
     datadump();
   }
@@ -104,7 +104,8 @@ var datadump = function(){
         ships: ships,
         asteroids: asteroids,
         projectiles: projectiles,
-        planets: planets});
+        planets: planets
+      });
     }
   });
 }

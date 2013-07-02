@@ -65,6 +65,25 @@ socket.on('join_success', function(players) {
   });
   $g.connected = true;
 });
+socket.on('accelerate', function(acclr, num){
+  if (num === -1) {
+    $g.mainShip.accelerating = acclr;
+  } else {
+    $g.findShip(num).accelerating = acclr;
+  }
+});
+socket.on('rotate', function(rotating){
+  $g.mainShip.rotating = rotating;
+});
+socket.on('shield', function(shielded){
+  $g.mainShip.shielded = shielded;
+});
+socket.on('death', function(data){
+  $g.connected = false;
+});
+socket.on('player_died', function(data){
+  console.log("Player is dead")
+});
 socket.on('player_dc', function(players) {
   $('#users-list').empty();
   players.forEach(function(player){

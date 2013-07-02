@@ -17,12 +17,19 @@ exports.io = function(socket) {
 	socket.on('accelerate', function(acclr){
 		var ship = getShip(current_player(socket).number);
 		ship.accelerating = acclr;
-		// socket.emit("accelerate", acclr);
+		socket.emit("accelerate", acclr, -1);
+        socket.broadcast.emit("accelerate", acclr, ship.number);
 	});
     socket.on('rotate', function(dir){
 		var ship = getShip(current_player(socket).number);
 		ship.rotating = dir;
-		// socket.emit("rotate", player.ship.rotating);
+		socket.emit("rotate", dir);
+    });
+    socket.on('shield', function(shielded){
+        var ship = getShip(current_player(socket).number);
+        ship.shielded = shielded;
+        console.log(ship.shielded)
+        socket.emit("shield", shielded);
     });
     socket.on('fire', function(wpn_number) {
     	var ship = getShip(current_player(socket).number);
@@ -40,6 +47,7 @@ exports.io = function(socket) {
 		var ship = getShip(current_player(socket).number);
 		if (ship.rotating === dir) {
 			ship.rotating = 0;
+            socket.emit("rotate", 0);
 		}
 		// socket.emit("rotate", player.ship.rotating);
     });

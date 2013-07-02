@@ -124,6 +124,15 @@ Ship.prototype.update = function(msDuration) {
    this.rotate(_s);
    this.move(_s);
    this.check_laser(_s);
+   this.check_heat(_s);
+   //Shield heat
+   if (this.shielded) {
+      if (this.o_timer > 0) {
+         this.shielded = false;
+      } else {
+         this.heat += this.shield_heat_rate * _s;
+      }
+   }
    this.image = gamejs.transform.rotate(this.originalImage, this.rotation);
    var diff = $v.subtract(globals.mouse_pos, [this._x, this._y]);
    if (this.mainShip) {
@@ -168,6 +177,7 @@ Ship.prototype.attach_particles = function() {
        deltaY: Math.cos(this.rotation / 180 * Math.PI) * sidespeed + Math.sin(this.rotation / 180 * Math.PI) * speed,
     });
 };
+
 Ship.prototype.check_laser = function(_s) {
    for (var i = 1; i >= 0; i--) {
       var las = this.laser[i];
@@ -198,6 +208,26 @@ Ship.prototype.check_laser = function(_s) {
          if (las.fade <= 0) {
             las.fade = 0;
          };
+      }
+   }
+}
+Ship.prototype.check_heat = function(_s) {
+   if ((this.heat > this.heat_max) && (this.o_timer == 0)) {
+      this.o_timer = this.overheat;
+      // socket.emit('overheat', this.number);
+      this.heat = this.heat_max * .95
+   } else if (this.o_timer > 0) {
+      console.log("Counting down")
+      console.log(this.o_timer)
+      this.o_timer -= this.cool_rate * _s;
+      if (this.o_timer < 0) {
+         this.o_timer = 0;
+         // socket.emit('end_overheat', this.number);
+      }
+   } else if(this.heat > 0) {
+      this.heat -= this.cool_rate * _s;
+      if (this.heat < 0) {
+         this.heat = 0;
       }
    }
 }

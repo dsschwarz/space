@@ -127,14 +127,20 @@ function main() {
 
          draw_particles(msDuration);
          draw_stars();
+         if (globals.mouse_moved) {
+            socket.emit('mouse_moved', globals.mouse_pos);
+         };
 
          // Draw heat and health
          globals.projectiles.update(msDuration);
          globals.projectiles.draw(mainSurface);
-         globals.asteroids.update(msDuration);
-         globals.asteroids.draw(mainSurface);
+
          globals.planets.update(msDuration);
          globals.planets.draw(mainSurface);
+
+         globals.asteroids.update(msDuration);
+         globals.asteroids.draw(mainSurface);
+
          globals.ships.update(msDuration);
          globals.ships.draw(mainSurface);
          draw_bars();
@@ -146,26 +152,47 @@ function main() {
          if (event.type === $e.KEY_UP) {
             if (event.key == $e.K_w) {
                socket.emit('accelerate', false);
+               globals.accelerating = false;
             } else if (event.key == $e.K_d) {
                socket.emit('end_rotate', 1);
+               globals.rotating = 0;
             } else if (event.key == $e.K_a) {
                socket.emit('end_rotate', -1);
+               globals.rotating = 0;
             } else if (event.key == $e.K_SHIFT) {
-               socket.emit('end_shield');
+               socket.emit('shield', false);
+               globals.shielded = false;
             } else if (event.key == $e.K_SPACE) {
                socket.emit('end_fire', 0);
+               globals.fire[0] = false;
             }
          } else if (event.type === $e.KEY_DOWN) {
             if (event.key == $e.K_w) {
-               socket.emit('accelerate', true);
+               if (globals.accelerating === false) {
+                  socket.emit('accelerate', true);
+                  globals.accelerating = true;
+               }
             } else if (event.key == $e.K_d) {
-               socket.emit('rotate', 1);
+               if (globals.rotating != 1) {
+                  socket.emit('rotate', 1);
+                  globals.rotating = 1;
+               }
             } else if (event.key == $e.K_a) {
-               socket.emit('rotate', -1);
+               if (globals.rotating != -1) {
+                  socket.emit('rotate', -1);
+                  globals.rotating = -1;
+               }
             } else if (event.key == $e.K_SHIFT) {
-               socket.emit('shield');
+               if (globals.shielded === false) {
+                  socket.emit('shield', true);
+                  console.log(globals.mainShip.shielded)
+                  globals.shielded = true;
+               }
             } else if (event.key == $e.K_SPACE) {
-               socket.emit('fire', 0);
+               if (globals.fire[0] === false) {
+                  socket.emit('fire', 0);
+                  globals.fire[0] = true;
+               }
             } else if (event.key == $e.K_q) {
                socket.emit('weapon_switch', 0);
             } else if (event.key == $e.K_e) {
@@ -173,13 +200,13 @@ function main() {
             }
          } else if (event.type === $e.MOUSE_MOTION) {
             if (display.rect.collidePoint(event.pos)) {
-               // ship.point_to([event.pos[0] + globals.offset[0], event.pos[1] + globals.offset[1]]);
                globals.mouse_pixels = event.pos;
                globals.mouse_pos = $v.add(event.pos, globals.offset)
+               globals.mouse_moved = true;
             }
          } else if (event.type === $e.MOUSE_DOWN) {
             if (display.rect.collidePoint(event.pos)) {
-               socket.emit('fire', 1);
+               socket.emit('fire', 1, globals.mouse_pos);
             }
          } else if (event.type === $e.MOUSE_UP) {
             socket.emit('end_fire', 1);

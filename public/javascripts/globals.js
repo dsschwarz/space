@@ -1,16 +1,22 @@
 var gamejs = require('gamejs');
 exports.height = 600;
 exports.width  = 800;
-exports.mouse_pos = [0, 0];
-exports.mouse_pixels = [0, 0];
+exports.mouse_pos = [0, 0];    // Absolute
+exports.mouse_pixels = [0, 0]; // Relative to screen
 exports.particles = [];
-exports.players = [];
+exports.players = [];		   // Current players; name & number
 exports.projectiles = new gamejs.sprite.Group();
 exports.planets = new gamejs.sprite.Group();
 exports.asteroids = new gamejs.sprite.Group();
 exports.ships = new gamejs.sprite.Group();
 exports.mainShip = {};
 exports.offset = [0, 0];
+
+// Flags for socket
+exports.accelerating = false;
+exports.shielded = false;
+exports.fire = [false];
+exports.rotating = 0;
 exports.connected = false;
 function get_position(true_pos, center, dim, angle) {
 	center = center || [0, 0];
@@ -55,6 +61,16 @@ function groupCollideLine(group, pointA, pointB) {
 		}
 	})
 	return colObjs;
+}
+function findShip(num) {
+	var return_ship = {};
+	exports.ships.forEach(function(ship){
+		if(ship.number === num){
+			return_ship = ship;
+			return;
+		}
+	})
+	return return_ship;
 }
 exports.get_position = get_position;
 exports.groupCollideLine = groupCollideLine;
