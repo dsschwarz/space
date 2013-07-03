@@ -23,7 +23,9 @@
     <script src="lib/gamejs.min.js"></script>
     <script type="text/javascript">
         require.setModuleRoot('javascripts/');
-        require.run('main')
+        $('#gjs-loader').click(function(){
+            require.run('main')
+        });
 
     </script>
 </head>
