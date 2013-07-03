@@ -100,7 +100,7 @@ socket.on('rotate', function(rotating, num){
   if (num === -1) {
     $g.mainShip.rotating = rotating;
   } else {
-    // $g.findShip(num).rotating = rotating;
+    $g.findShip(num).rotating = rotating;
   }
 });
 socket.on('shield', function(shielded, num){

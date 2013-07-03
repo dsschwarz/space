@@ -62,7 +62,7 @@ function groupCollideLine(group, pointA, pointB) {
 	})
 	return colObjs;
 }
-function findShip(num) {
+var findShip = function(num) {
 	var return_ship = {};
 	exports.ships.forEach(function(ship){
 		if(ship.number === num){
@@ -72,5 +72,6 @@ function findShip(num) {
 	})
 	return return_ship;
 }
+exports.findShip = findShip
 exports.get_position = get_position;
 exports.groupCollideLine = groupCollideLine;
