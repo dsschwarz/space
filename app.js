@@ -69,39 +69,40 @@ var ontick = function () {
   if (timer > 500) {
     timer = 0;
     datadump();
-  }
-  if ($g.flags.ships) {
-    $g.flags.ships = false;
-    var ships = [];
-    $g.ships.forEach(function(ship) {
-      ships.push(new templates.Ship(ship));
-    });
-    broadcast('update_ships', {ships: ships});
+  } else {
+    if ($g.flags.ships) {
+      var ships = [];
+      $g.ships.forEach(function(ship) {
+        ships.push(new templates.Ship(ship));
+      });
+      broadcast('update_ships', {ships: ships});
+    };
+    if ($g.flags.planets) {
+      var planets = [];
+      $g.planets.forEach(function(planet) {
+        planets.push(new templates.Planet(planet));
+      });
+      broadcast('update_planets', {planets: planets});
+    };
+    if ($g.flags.asteroids) {
+      var asteroids = [];
+      $g.asteroids.forEach(function(asteroid) {
+        asteroids.push(new templates.Asteroid(asteroid));
+      });
+      broadcast('update_asteroids', {asteroids: asteroids});
+    };
+    if ($g.flags.projectiles) {
+      var projectiles = [];
+      $g.projectiles.forEach(function(projectile) {
+        projectiles.push(new templates.Projectile(projectile));
+      });
+      broadcast('update_projectiles', {projectiles: projectiles});
+    };
   };
-  if ($g.flags.planets) {
-    $g.flags.planets = false;
-    var planets = [];
-    $g.planets.forEach(function(planet) {
-      planets.push(new templates.Planet(planet));
-    });
-    broadcast('update_planets', {planets: planets});
-  };
-  if ($g.flags.asteroids) {
-    $g.flags.asteroids = false;
-    var asteroids = [];
-    $g.asteroids.forEach(function(asteroid) {
-      asteroids.push(new templates.Asteroid(asteroid));
-    });
-    broadcast('update_asteroids', {asteroids: asteroids});
-  };
-  if ($g.flags.projectiles) {
-    $g.flags.projectiles = false;
-    var projectiles = [];
-    $g.projectiles.forEach(function(projectile) {
-      projectiles.push(new templates.Projectile(projectile));
-    });
-    broadcast('update_projectiles', {projectiles: projectiles});
-  };
+  $g.flags.projectiles = false;
+  $g.flags.asteroids = false;
+  $g.flags.planets = false;
+  $g.flags.ships = false;
   
 };
 setInterval(ontick, 10);
