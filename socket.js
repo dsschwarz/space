@@ -79,7 +79,6 @@ exports.io = function(socket) {
                 socket.emit("rotate", 0, -1);
                 socket.broadcast.emit("rotate", 0, ship.number);
             }
-            // socket.emit("rotate", player.ship.rotating);
         });
         socket.on('disconnect', function(){
             var temp = [];
