@@ -3,8 +3,12 @@ exports.io = function(socket) {
 	console.log("A user connected");
 	socket.set('playing', false);
     socket.on('mouse_pos', function(pos){
-        var ship = getShip(current_player(socket).number);
-        ship.mouse_pos = pos;
+        try {
+            var ship = getShip(current_player(socket).number);
+            ship.mouse_pos = pos;
+        } catch(err) {
+            console.log(err);
+        }
     });
     socket.on('join', function(name){
     	var player = new $player.Player(name)
