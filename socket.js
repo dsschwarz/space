@@ -41,67 +41,68 @@ exports.io = function(socket) {
         });
     	socket.broadcast.emit('new_player', player);
     	socket.emit('join_success', globals.players);
-    });
-	socket.on('accelerate', function(acclr){
-		var ship = getShip(current_player(socket).number);
-		ship.accelerating = acclr;
-		socket.emit("accelerate", acclr, -1);
-        socket.broadcast.emit("accelerate", acclr, ship.number);
-	});
-    socket.on('rotate', function(dir){
-		var ship = getShip(current_player(socket).number);
-		ship.rotating = dir;
-        socket.emit("rotate", dir, -1);
-        socket.broadcast.emit("rotate", dir, ship.number);
-    });
-    socket.on('shield', function(shielded){
-        var ship = getShip(current_player(socket).number);
-        ship.shielded = shielded;
-        socket.emit("shield", shielded, -1);
-        socket.broadcast.emit("shield", shielded, ship.number);
-    });
-    socket.on('fire', function(wpn_number) {
-    	var ship = getShip(current_player(socket).number);
-    	ship.weapon_firing[wpn_number] = 1;
-    });
-    socket.on('weapon_switch', function(wpn_number) {
-    	var ship = getShip(current_player(socket).number);
-    	ship.weapon_switch(wpn_number);
-    });
-    socket.on('end_fire', function(wpn_number) {
-    	var ship = getShip(current_player(socket).number);
-    	ship.weapon_firing[wpn_number] = 0;
-    });
-    socket.on('end_rotate', function(dir){
-		var ship = getShip(current_player(socket).number);
-		if (ship.rotating === dir) {
-			ship.rotating = 0;
-            socket.emit("rotate", 0, -1);
-            socket.broadcast.emit("rotate", 0, ship.number);
-		}
-		// socket.emit("rotate", player.ship.rotating);
-    });
-    socket.on('disconnect', function(){
-    	var temp = [];
-    	var number = NaN;
-    	socket.get('player', function(e , player){
-    		number = player.number;
-    	});
-    	console.log("Disconnect: " + number);
-    	globals.players.forEach(function(player){
-			if (number != player.number) {
-				temp.push(player);
-			};
-    	});
-    	globals.players = temp;
-    	temp = new gamejs.sprite.Group();
-    	globals.ships.forEach(function(ship){
-			if (number != ship.number) {
-				temp.add(ship);
-			};
-    	});
-    	globals.ships = temp;
-    	socket.broadcast.emit('player_dc', globals.players);
+        
+        socket.on('accelerate', function(acclr){
+            var ship = getShip(current_player(socket).number);
+            ship.accelerating = acclr;
+            socket.emit("accelerate", acclr, -1);
+            socket.broadcast.emit("accelerate", acclr, ship.number);
+        });
+        socket.on('rotate', function(dir){
+            var ship = getShip(current_player(socket).number);
+            ship.rotating = dir;
+            socket.emit("rotate", dir, -1);
+            socket.broadcast.emit("rotate", dir, ship.number);
+        });
+        socket.on('shield', function(shielded){
+            var ship = getShip(current_player(socket).number);
+            ship.shielded = shielded;
+            socket.emit("shield", shielded, -1);
+            socket.broadcast.emit("shield", shielded, ship.number);
+        });
+        socket.on('fire', function(wpn_number) {
+            var ship = getShip(current_player(socket).number);
+            ship.weapon_firing[wpn_number] = 1;
+        });
+        socket.on('weapon_switch', function(wpn_number) {
+            var ship = getShip(current_player(socket).number);
+            ship.weapon_switch(wpn_number);
+        });
+        socket.on('end_fire', function(wpn_number) {
+            var ship = getShip(current_player(socket).number);
+            ship.weapon_firing[wpn_number] = 0;
+        });
+        socket.on('end_rotate', function(dir){
+            var ship = getShip(current_player(socket).number);
+            if (ship.rotating === dir) {
+                ship.rotating = 0;
+                socket.emit("rotate", 0, -1);
+                socket.broadcast.emit("rotate", 0, ship.number);
+            }
+            // socket.emit("rotate", player.ship.rotating);
+        });
+        socket.on('disconnect', function(){
+            var temp = [];
+            var number = NaN;
+            socket.get('player', function(e , player){
+                number = player.number;
+            });
+            console.log("Disconnect: " + number);
+            globals.players.forEach(function(player){
+                if (number != player.number) {
+                    temp.push(player);
+                };
+            });
+            globals.players = temp;
+            temp = new gamejs.sprite.Group();
+            globals.ships.forEach(function(ship){
+                if (number != ship.number) {
+                    temp.add(ship);
+                };
+            });
+            globals.ships = temp;
+            socket.broadcast.emit('player_dc', globals.players);
+        });
     });
 };
 var current_player = function(socket){
