@@ -66,7 +66,7 @@ var ontick = function () {
 	$g.ships.update(msDuration);
 
   timer += msDuration;
-  if (timer > 500) {
+  if (timer > 200) {
     timer = 0;
     datadump();
   } else {
