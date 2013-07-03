@@ -121,6 +121,10 @@ gamejs.utils.objects.extend(Ship, base.BaseSprite);
 
 Ship.prototype.update = function(msDuration) {
    var _s = msDuration / 1000;
+   if (this.mainShip) {
+      this.turret.rotation = Math.atan2(diff[1], diff[0]) * 180 / Math.PI;
+      globals.offset = [(this._x - globals.width/2), (this._y - globals.height/2)];
+   };
    this.rotate(_s);
    this.move(_s);
    this.check_laser(_s);
@@ -135,10 +139,7 @@ Ship.prototype.update = function(msDuration) {
    }
    this.image = gamejs.transform.rotate(this.originalImage, this.rotation);
    var diff = $v.subtract(globals.mouse_pos, [this._x, this._y]);
-   if (this.mainShip) {
-      this.turret.rotation = Math.atan2(diff[1], diff[0]) * 180 / Math.PI;
-      globals.offset = [(this._x - globals.width/2), (this._y - globals.height/2)];
-   };
+   
    var position = globals.get_position([this._x, this._y], this.center, this.getSize(), -this.rotation);
    this.rect = new gamejs.Rect(position, this.image.getSize());
 };
