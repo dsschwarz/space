@@ -2,6 +2,10 @@
 exports.io = function(socket) {
 	console.log("A user connected");
 	socket.set('playing', false);
+    socket.on('mouse_pos', function(pos){
+        var ship = getShip(current_player(socket).number);
+        ship.mouse_pos = pos;
+    });
     socket.on('join', function(name){
     	var player = new $player.Player(name)
     	socket.set('player', player);
@@ -9,8 +13,32 @@ exports.io = function(socket) {
     	globals.players.push(player);
     	var ship = new $ship.Ship([0,0]);
     	ship.number = player.number;
+        ship.socket = this;
+        ship.name = player.name;
     	globals.ships.add(ship);
     	console.log("New player " + player.name + " :: #" + player.number);
+        var ships = []
+            , asteroids = []
+            , projectiles = []
+            , planets = [];
+        $g.ships.forEach(function(ship) {
+            ships.push(new templates.Ship(ship));
+        });
+        $g.asteroids.forEach(function(asteroid) {
+            asteroids.push(new templates.Asteroid(asteroid));
+        });
+        $g.planets.forEach(function(planet) {
+            planets.push(new templates.Planet(planet));
+        });
+        $g.projectiles.forEach(function(projectile) {
+            projectiles.push(new templates.Projectile(projectile));
+        });
+        socket.emit('datadump', player.number, {
+            ships: ships,
+            asteroids: asteroids,
+            projectiles: projectiles,
+            planets: planets
+        });
     	socket.broadcast.emit('new_player', player);
     	socket.emit('join_success', globals.players);
     });
@@ -23,13 +51,14 @@ exports.io = function(socket) {
     socket.on('rotate', function(dir){
 		var ship = getShip(current_player(socket).number);
 		ship.rotating = dir;
-		socket.emit("rotate", dir);
+        socket.emit("rotate", dir, -1);
+        socket.broadcast.emit("rotate", dir, ship.number);
     });
     socket.on('shield', function(shielded){
         var ship = getShip(current_player(socket).number);
         ship.shielded = shielded;
-        console.log(ship.shielded)
-        socket.emit("shield", shielded);
+        socket.emit("shield", shielded, -1);
+        socket.broadcast.emit("shield", shielded, ship.number);
     });
     socket.on('fire', function(wpn_number) {
     	var ship = getShip(current_player(socket).number);
@@ -47,7 +76,8 @@ exports.io = function(socket) {
 		var ship = getShip(current_player(socket).number);
 		if (ship.rotating === dir) {
 			ship.rotating = 0;
-            socket.emit("rotate", 0);
+            socket.emit("rotate", 0, -1);
+            socket.broadcast.emit("rotate", 0, ship.number);
 		}
 		// socket.emit("rotate", player.ship.rotating);
     });

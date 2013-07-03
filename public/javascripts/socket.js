@@ -6,23 +6,22 @@ var $planet = require('planet');
 var $asteroid = require('asteroid');
 var gamejs = require("gamejs");
 var socket = io.connect('http://localhost:3000');
-
-socket.on('datadump', function(data){
+var update_ships = function(number, data){
   temp = new gamejs.sprite.Group();
   data.ships.forEach(function(ship){
     var s = new $ship.Ship([0,0]);
     update_attributes(s, ship);
-    if (s.number === data.number) {
+    if (s.number === number) {
       s.mainShip = true;
       $g.mainShip = s;
     }
     temp.add(s);
   });
   $g.ships= temp;
-
+};
+var update_projectiles = function(data){
   temp = new gamejs.sprite.Group();
   data.projectiles.forEach(function(projectile){
-
     var p = {};
     if (projectile.ptype === "bomb") {
       p = new $bomb.Bomb([0,0]);
@@ -33,7 +32,8 @@ socket.on('datadump', function(data){
     temp.add(p);
   });
   $g.projectiles = temp;
-
+}
+var update_planets = function(data){
   temp = new gamejs.sprite.Group();
   data.planets.forEach(function(planet){
     var p = new $planet.Planet([0,0]);
@@ -41,7 +41,8 @@ socket.on('datadump', function(data){
     temp.add(p);
   });
   $g.planets = temp;
-
+}
+var update_asteroids = function(data){
   temp = new gamejs.sprite.Group();
   data.asteroids.forEach(function(asteroid){
     var p = new $asteroid.Asteroid([0,0]);
@@ -49,6 +50,28 @@ socket.on('datadump', function(data){
     temp.add(p);
   });
   $g.asteroids = temp;
+}
+socket.on('datadump', function(number, data){
+  update_ships(number, data);
+  update_projectiles(data);
+  update_planets(data);
+  update_asteroids(data);
+});
+socket.on('update_ships', function(number, data){
+  update_ships(number, data);
+  console.log(data);
+});
+socket.on('update_projectiles', function(number, data){
+  update_projectiles(data);
+  console.log(data);
+});
+socket.on('update_planets', function(number, data){
+  update_planets(data);
+  console.log(data);
+});
+socket.on('update_asteroids', function(number, data){
+  update_asteroids(data);
+  console.log(data);
 });
 socket.on('connect', function(data){
   console.log('connected to:')
@@ -72,15 +95,42 @@ socket.on('accelerate', function(acclr, num){
     $g.findShip(num).accelerating = acclr;
   }
 });
-socket.on('rotate', function(rotating){
-  $g.mainShip.rotating = rotating;
+socket.on('rotate', function(rotating, num){
+  console.log(num)
+  if (num === -1) {
+    $g.mainShip.rotating = rotating;
+  } else {
+    // $g.findShip(num).rotating = rotating;
+  }
 });
-socket.on('shield', function(shielded){
-  $g.mainShip.shielded = shielded;
+socket.on('shield', function(shielded, num){
+  if (num === -1) {
+    $g.mainShip.shielded = shielded;
+  } else {
+    $g.findShip(num).shielded = shielded;
+  }
+});
+socket.on('overheat', function(o_timer, heat, num){
+  if (num === -1) {
+    $g.mainShip.o_timer = o_timer;
+    $g.mainShip.heat = heat;
+  } else {
+    $g.findShip(num).o_timer = o_timer;
+    $g.findShip(num).heat = heat;    
+  }
+});
+socket.on('end_overheat', function(num){
+  if (num === -1) {
+    $g.mainShip.o_timer = 0;
+  } else {
+    $g.findShip(num).o_timer = 0;
+  }
 });
 socket.on('death', function(data){
   $g.connected = false;
+  $g.mainShip.health = 0;
 });
+
 socket.on('player_died', function(data){
   console.log("Player is dead")
 });

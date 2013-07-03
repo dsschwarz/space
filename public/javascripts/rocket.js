@@ -17,6 +17,9 @@ var Rocket = function(rect) {
 	this.destination = [0, 0];
 	this.tracking = false;
 	this.rotate = function(_s) {
+		if(this.follow_mouse) {
+			this.destination = globals.mouse_pos;
+		}
 		if(this.tracking) {
 			var dif = $v.subtract(this.destination, [this._x, this._y]);
 			var angle = $m.normaliseDegrees($m.degrees(Math.atan2(dif[1], dif[0])));

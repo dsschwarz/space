@@ -1,8 +1,3 @@
-
-
-
-
-
 /**
  * Module dependencies.
  */
@@ -71,10 +66,42 @@ var ontick = function () {
 	$g.ships.update(msDuration);
 
   timer += msDuration;
-  if (timer > 300) {
+  if (timer > 3000) {
     timer = 0;
     datadump();
   }
+  if ($g.flags.ships) {
+    $g.flags.ships = false;
+    var ships = [];
+    $g.ships.forEach(function(ship) {
+      ships.push(new templates.Ship(ship));
+    });
+    broadcast('update_ships', {ships: ships});
+  };
+  if ($g.flags.planets) {
+    $g.flags.planets = false;
+    var planets = [];
+    $g.planets.forEach(function(planet) {
+      planets.push(new templates.Planet(planet));
+    });
+    broadcast('update_planets', {planets: planets});
+  };
+  if ($g.flags.asteroids) {
+    $g.flags.asteroids = false;
+    var asteroids = [];
+    $g.asteroids.forEach(function(asteroid) {
+      asteroids.push(new templates.Asteroid(asteroid));
+    });
+    broadcast('update_asteroids', {asteroids: asteroids});
+  };
+  if ($g.flags.projectiles) {
+    $g.flags.projectiles = false;
+    var projectiles = [];
+    $g.projectiles.forEach(function(projectile) {
+      projectiles.push(new templates.Projectile(projectile));
+    });
+    broadcast('update_projectiles', {projectiles: projectiles});
+  };
   
 };
 setInterval(ontick, 10);
@@ -97,19 +124,25 @@ var datadump = function(){
   $g.projectiles.forEach(function(projectile) {
     projectiles.push(new templates.Projectile(projectile));
   });
+  
+  broadcast('datadump', {
+    ships: ships,
+    asteroids: asteroids,
+    projectiles: projectiles,
+    planets: planets
+  });
+}
+var broadcast = function(fn_id, data){
   io.sockets.clients().forEach(function (socket) {
     if ($socket.isPlaying(socket)) {
-      socket.emit('datadump', {
-        number: $socket.current_player(socket).number,
-        ships: ships,
-        asteroids: asteroids,
-        projectiles: projectiles,
-        planets: planets
-      });
+      if ((fn_id === "update_ships") || (fn_id === "datadump")) {
+        socket.emit(fn_id, $socket.current_player(socket).number, data);
+      } else {
+        socket.emit(fn_id, -1, data); // Number doesn't matter
+      }
     }
   });
 }
-
 io.on('connection', $socket.io);
 
 server.listen(3000);

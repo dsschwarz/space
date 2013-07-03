@@ -127,8 +127,8 @@ function main() {
 
          draw_particles(msDuration);
          draw_stars();
-         if (globals.mouse_moved) {
-            socket.emit('mouse_moved', globals.mouse_pos);
+         if (globals.connected) {
+            socket.emit('mouse_pos', globals.mouse_pos);
          };
 
          // Draw heat and health
@@ -202,7 +202,6 @@ function main() {
             if (display.rect.collidePoint(event.pos)) {
                globals.mouse_pixels = event.pos;
                globals.mouse_pos = $v.add(event.pos, globals.offset)
-               globals.mouse_moved = true;
             }
          } else if (event.type === $e.MOUSE_DOWN) {
             if (display.rect.collidePoint(event.pos)) {
