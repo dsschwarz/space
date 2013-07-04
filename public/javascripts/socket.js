@@ -7,6 +7,7 @@ var $asteroid = require('asteroid');
 var gamejs = require("gamejs");
 var socket = io.connect('http://192.34.63.118:3000');
 // var socket = io.connect('http://localhost:3000');
+
 var update_ships = function(number, data){
   temp = new gamejs.sprite.Group();
   data.ships.forEach(function(ship){
@@ -141,7 +142,12 @@ socket.on('player_dc', function(players) {
     $('#users-list').append("<li>"+player.name+"</li>");
   });
 });
+socket.on('ping') {
+  console.log(globals.ping_timer);
+  globals.ping_timer = 0;
+}
 exports.socket = socket;
+
 var update_attributes = function(obj, obj2){
     if(obj2 == null || typeof(obj2) != 'object')
         return obj2;

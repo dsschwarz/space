@@ -13,6 +13,7 @@ exports.mainShip = {};
 exports.offset = [0, 0];
 
 // Flags for socket
+exports.ping_timer = 0;
 exports.accelerating = false;
 exports.shielded = false;
 exports.fire = [false];

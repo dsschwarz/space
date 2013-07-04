@@ -51,6 +51,9 @@ exports.io = function(socket) {
                 console.log(err);
             }
         });
+        socket.on('ping', function(){
+            socket.emit('ping');
+        })
         socket.on('accelerate', function(acclr){
             var ship = getShip(current_player(socket).number);
             ship.accelerating = acclr;

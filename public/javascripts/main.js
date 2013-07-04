@@ -122,6 +122,12 @@ function main() {
    };
    // msDuration = time since last tick() call
    gamejs.onTick(function(msDuration) {
+         if(globals.ping_timer === 0 ) {
+            socket.emit('ping');
+            globals.ping_timer += msDuration;
+         } else {
+            globals.ping_timer += msDuration;
+         }
          globals.mouse_pos = $v.add(globals.mouse_pixels, globals.offset)
          mainSurface.fill("#000000");
 
