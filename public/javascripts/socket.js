@@ -143,8 +143,8 @@ socket.on('player_dc', function(players) {
   });
 });
 socket.on('ping', function(){
-  console.log(globals.ping_timer);
-  globals.ping_timer = 0;
+  console.log($g.ping_timer);
+  $g.ping_timer = 0;
 }) 
 exports.socket = socket;
 
