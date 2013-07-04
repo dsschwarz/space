@@ -14,6 +14,8 @@ exports.offset = [0, 0];
 
 // Flags for socket
 exports.ping_timer = 0;
+exports.ping_count = 0;
+exports.total_ping = 0;
 exports.accelerating = false;
 exports.shielded = false;
 exports.fire = [false];

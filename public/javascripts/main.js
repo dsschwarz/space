@@ -124,7 +124,6 @@ function main() {
    gamejs.onTick(function(msDuration) {
          if(globals.ping_timer === 0 ) {
             socket.emit('ping');
-            console.log('emit ping')
             globals.ping_timer += msDuration;
          } else {
             globals.ping_timer += msDuration;
@@ -163,6 +162,7 @@ function main() {
          if (event.type === $e.KEY_UP) {
             if (event.key == $e.K_w) {
                socket.emit('accelerate', false);
+               // globals.mainShip.accelerating = false;
                globals.accelerating = false;
             } else if (event.key == $e.K_d) {
                socket.emit('end_rotate', 1);
@@ -181,6 +181,7 @@ function main() {
             if (event.key == $e.K_w) {
                if (globals.accelerating === false) {
                   socket.emit('accelerate', true);
+                  // globals.mainShip.accelerating = true;
                   globals.accelerating = true;
                }
             } else if (event.key == $e.K_d) {

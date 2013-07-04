@@ -66,36 +66,34 @@ var ontick = function () {
 	$g.ships.update(msDuration);
 
   
-  {
-    if ($g.flags.ships) {
-      console.info("msDuration: " + msDuration);
-      var ships = [];
-      $g.ships.forEach(function(ship) {
-        ships.push(new templates.Ship(ship));
-      });
-      broadcast('update_ships', {ships: ships});
-    };
-    if ($g.flags.planets) {
-      var planets = [];
-      $g.planets.forEach(function(planet) {
-        planets.push(new templates.Planet(planet));
-      });
-      broadcast('update_planets', {planets: planets});
-    };
-    if ($g.flags.asteroids) {
-      var asteroids = [];
-      $g.asteroids.forEach(function(asteroid) {
-        asteroids.push(new templates.Asteroid(asteroid));
-      });
-      broadcast('update_asteroids', {asteroids: asteroids});
-    };
-    if ($g.flags.projectiles) {
-      var projectiles = [];
-      $g.projectiles.forEach(function(projectile) {
-        projectiles.push(new templates.Projectile(projectile));
-      });
-      broadcast('update_projectiles', {projectiles: projectiles});
-    };
+  if ($g.flags.ships) {
+    console.info("msDuration: " + msDuration);
+    var ships = [];
+    $g.ships.forEach(function(ship) {
+      ships.push(new templates.Ship(ship));
+    });
+    broadcast('update_ships', {ships: ships});
+  };
+  if ($g.flags.planets) {
+    var planets = [];
+    $g.planets.forEach(function(planet) {
+      planets.push(new templates.Planet(planet));
+    });
+    broadcast('update_planets', {planets: planets});
+  };
+  if ($g.flags.asteroids) {
+    var asteroids = [];
+    $g.asteroids.forEach(function(asteroid) {
+      asteroids.push(new templates.Asteroid(asteroid));
+    });
+    broadcast('update_asteroids', {asteroids: asteroids});
+  };
+  if ($g.flags.projectiles) {
+    var projectiles = [];
+    $g.projectiles.forEach(function(projectile) {
+      projectiles.push(new templates.Projectile(projectile));
+    });
+    broadcast('update_projectiles', {projectiles: projectiles});
   };
   $g.flags.projectiles = false;
   $g.flags.asteroids = false;

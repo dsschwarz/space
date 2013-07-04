@@ -5,8 +5,8 @@ var $bomb = require('bomb');
 var $planet = require('planet');
 var $asteroid = require('asteroid');
 var gamejs = require("gamejs");
-var socket = io.connect('http://192.34.63.118:3000');
-// var socket = io.connect('http://localhost:3000');
+// var socket = io.connect('http://192.34.63.118:3000');
+var socket = io.connect('http://localhost:3000');
 
 var update_ships = function(number, data){
   temp = new gamejs.sprite.Group();
@@ -91,7 +91,9 @@ socket.on('join_success', function(players) {
   $g.connected = true;
 });
 socket.on('accelerate', function(acclr, num, ship){
+  console.log(num + 'accelerate: ' + acclr);
   if (num === -1) {
+    $g.mainShip.accelerating = acclr;
     update_attributes($g.mainShip, ship);
   } else {
     update_attributes($g.findShip(num), ship);
@@ -143,7 +145,10 @@ socket.on('player_dc', function(players) {
   });
 });
 socket.on('ping', function(){
-  console.log($g.ping_timer);
+  $('#ping').text($g.ping_timer);
+  $g.total_ping += $g.ping_timer;
+  $g.ping_count += 1;
+  $('#ave_ping').text($g.total_ping/$g.ping_count);
   $g.ping_timer = 0;
 }) 
 exports.socket = socket;
