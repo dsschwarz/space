@@ -50,9 +50,9 @@ app.get('/', routes.index);
 app.get('/map', game.map);
 
 
-for (var i = 10; i >= 0; i--) {
-  $g.asteroids.add(new $asteroid.Asteroid([$g.width*Math.random(), $g.height*Math.random()]));
-};
+// for (var i = 10; i >= 0; i--) {
+//   $g.asteroids.add(new $asteroid.Asteroid([$g.width*Math.random(), $g.height*Math.random()]));
+// };
 
 for (var j=0;j<3;j++) {
   $g.planets.add(new $planet.Planet([0,0]));
@@ -65,13 +65,10 @@ var ontick = function () {
 	$g.asteroids.update(msDuration);
 	$g.ships.update(msDuration);
 
-  timer += msDuration;
-  // if (timer > 200) {
-  //   timer = 0;
-  //   datadump();
-  // } else 
+  
   {
     if ($g.flags.ships) {
+      console.info("msDuration: " + msDuration);
       var ships = [];
       $g.ships.forEach(function(ship) {
         ships.push(new templates.Ship(ship));

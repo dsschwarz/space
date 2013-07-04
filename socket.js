@@ -54,12 +54,14 @@ exports.io = function(socket) {
         socket.on('accelerate', function(acclr){
             var ship = getShip(current_player(socket).number);
             ship.accelerating = acclr;
+            console.info("Accelerate: " + ship.number + " || " + acclr);
             socket.emit("accelerate", acclr, -1, new templates.Ship(ship));
             socket.broadcast.emit("accelerate", acclr, ship.number, new templates.Ship(ship));
         });
         socket.on('rotate', function(dir){
             var ship = getShip(current_player(socket).number);
             ship.rotating = dir;
+            console.info("Rotate: " + ship.number + " || " + dir);
             socket.emit("rotate", dir, -1, new templates.Ship(ship));
             socket.broadcast.emit("rotate", dir, ship.number, new templates.Ship(ship));
         });
@@ -83,6 +85,7 @@ exports.io = function(socket) {
         });
         socket.on('end_rotate', function(dir){
             var ship = getShip(current_player(socket).number);
+            console.info("Rotate: " + ship.number + " || " + dir);
             if (ship.rotating === dir) {
                 ship.rotating = 0;
                 socket.emit("rotate", 0, -1, new templates.Ship(ship));
