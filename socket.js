@@ -2,14 +2,6 @@
 exports.io = function(socket) {
 	console.log("A user connected");
 	socket.set('playing', false);
-    socket.on('mouse_pos', function(pos){
-        try {
-            var ship = getShip(current_player(socket).number);
-            ship.mouse_pos = pos;
-        } catch(err) {
-            console.log(err);
-        }
-    });
     socket.on('join', function(name){
     	var player = new $player.Player(name)
     	socket.set('player', player);
@@ -21,6 +13,12 @@ exports.io = function(socket) {
         ship.name = player.name;
     	globals.ships.add(ship);
     	console.log("New player " + player.name + " :: #" + player.number);
+        socket.broadcast.emit('new_player', player);
+        socket.emit('join_success', globals.players);
+        $g.flags.ships = true;
+
+
+
         var ships = []
             , asteroids = []
             , projectiles = []
@@ -37,15 +35,22 @@ exports.io = function(socket) {
         $g.projectiles.forEach(function(projectile) {
             projectiles.push(new templates.Projectile(projectile));
         });
+
         socket.emit('datadump', player.number, {
             ships: ships,
             asteroids: asteroids,
             projectiles: projectiles,
             planets: planets
         });
-    	socket.broadcast.emit('new_player', player);
-    	socket.emit('join_success', globals.players);
         
+        socket.on('mouse_pos', function(pos){
+            try {
+                var ship = getShip(current_player(socket).number);
+                ship.mouse_pos = pos;
+            } catch(err) {
+                console.log(err);
+            }
+        });
         socket.on('accelerate', function(acclr){
             var ship = getShip(current_player(socket).number);
             ship.accelerating = acclr;
