@@ -124,9 +124,14 @@ function main() {
    gamejs.onTick(function(msDuration) {
          if(globals.ping_timer === 0 ) {
             socket.emit('ping');
+            console.log('emit ping')
             globals.ping_timer += msDuration;
          } else {
             globals.ping_timer += msDuration;
+            if (globals.ping_timer >= 1000) {
+               console.info("ping over 1s")
+               globals.ping_timer = 0;
+            }
          }
          globals.mouse_pos = $v.add(globals.mouse_pixels, globals.offset)
          mainSurface.fill("#000000");

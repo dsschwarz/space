@@ -2,6 +2,9 @@
 exports.io = function(socket) {
 	console.log("A user connected");
 	socket.set('playing', false);
+    socket.on('ping', function(){
+        socket.emit('ping');
+    })
     socket.on('join', function(name){
     	var player = new $player.Player(name)
     	socket.set('player', player);
@@ -51,9 +54,6 @@ exports.io = function(socket) {
                 console.log(err);
             }
         });
-        socket.on('ping', function(){
-            socket.emit('ping');
-        })
         socket.on('accelerate', function(acclr){
             var ship = getShip(current_player(socket).number);
             ship.accelerating = acclr;
