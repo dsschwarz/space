@@ -49,14 +49,14 @@ exports.io = function(socket) {
         socket.on('accelerate', function(acclr){
             var ship = getShip(current_player(socket).number);
             ship.accelerating = acclr;
-            socket.emit("accelerate", acclr, -1);
-            socket.broadcast.emit("accelerate", acclr, ship.number);
+            socket.emit("accelerate", acclr, -1, new templates.Ship(ship));
+            socket.broadcast.emit("accelerate", acclr, ship.number, new templates.Ship(ship));
         });
         socket.on('rotate', function(dir){
             var ship = getShip(current_player(socket).number);
             ship.rotating = dir;
-            socket.emit("rotate", dir, -1);
-            socket.broadcast.emit("rotate", dir, ship.number);
+            socket.emit("rotate", dir, -1, new templates.Ship(ship));
+            socket.broadcast.emit("rotate", dir, ship.number, new templates.Ship(ship));
         });
         socket.on('shield', function(shielded){
             var ship = getShip(current_player(socket).number);
@@ -80,8 +80,8 @@ exports.io = function(socket) {
             var ship = getShip(current_player(socket).number);
             if (ship.rotating === dir) {
                 ship.rotating = 0;
-                socket.emit("rotate", 0, -1);
-                socket.broadcast.emit("rotate", 0, ship.number);
+                socket.emit("rotate", 0, -1, new templates.Ship(ship));
+                socket.broadcast.emit("rotate", 0, ship.number, new templates.Ship(ship));
             }
         });
         socket.on('disconnect', function(){

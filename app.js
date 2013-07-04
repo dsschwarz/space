@@ -66,10 +66,11 @@ var ontick = function () {
 	$g.ships.update(msDuration);
 
   timer += msDuration;
-  if (timer > 200) {
-    timer = 0;
-    datadump();
-  } else {
+  // if (timer > 200) {
+  //   timer = 0;
+  //   datadump();
+  // } else 
+  {
     if ($g.flags.ships) {
       var ships = [];
       $g.ships.forEach(function(ship) {
@@ -105,7 +106,7 @@ var ontick = function () {
   $g.flags.ships = false;
   
 };
-setInterval(ontick, 10);
+setInterval(ontick, 30);
 var TIMER_LASTCALL = Date.now();
 
 var datadump = function(){
