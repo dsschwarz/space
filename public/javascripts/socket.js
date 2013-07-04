@@ -142,10 +142,10 @@ socket.on('player_dc', function(players) {
     $('#users-list').append("<li>"+player.name+"</li>");
   });
 });
-socket.on('ping') {
+socket.on('ping', function(){
   console.log(globals.ping_timer);
   globals.ping_timer = 0;
-}
+}) 
 exports.socket = socket;
 
 var update_attributes = function(obj, obj2){
