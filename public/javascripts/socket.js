@@ -5,8 +5,8 @@ var $bomb = require('bomb');
 var $planet = require('planet');
 var $asteroid = require('asteroid');
 var gamejs = require("gamejs");
-// var socket = io.connect('http://192.34.63.118:3000');
-var socket = io.connect('http://localhost:3000');
+var socket = io.connect('http://192.34.63.118:3000');
+// var socket = io.connect('http://localhost:3000');
 
 var update_ships = function(number, data){
   temp = new gamejs.sprite.Group();
